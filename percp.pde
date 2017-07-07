@@ -1,16 +1,17 @@
 //perceptron object
 Perceptron perc;
 
+//to know which point to train with
 int current = 0;
 
 //array of points
-Point[] train = new Point[1000];
+Point[] train = new Point[100000];
 
 //coordinate space
-float xmin = -400;
-float ymin = -250;
-float xmax = 400;
-float ymax = 250;
+float xmin = -1000;
+float ymin = -600;
+float xmax = 1000;
+float ymax = 600;
 
 //function that describes a line
 float decrb_line(float x){
@@ -18,14 +19,16 @@ float decrb_line(float x){
 }
 
 void setup(){
-  size(640, 360);
-  
-  perc = new Perceptron(3, 0.00005);
+  size(1280, 720);
+  frameRate(60);
+  perc = new Perceptron(3, 0.0001);
   
   //create random points
   for(int i = 0; i < train.length; i++){
+    //random coordinates
     float x = random(xmin, xmax);
     float y = random(ymin, ymax);
+    //calc answer
     int answer = 1;
     if(y < decrb_line(x)){
       answer = -1;
@@ -39,7 +42,7 @@ void draw(){
   background(255);
   translate(width/2,height/2);
   
-  //draw the line that we want
+  //draw the line that is the goal of perceptron
   strokeWeight(4);
   stroke(127);
   float x1 = xmin;
@@ -65,11 +68,23 @@ void draw(){
   
   //draw points based on perceptron guess
   for(int i = 0; i < current; i++){
+    //draw points
     stroke(0);
     strokeWeight(1);
     fill(0);
+    int answer = train[i].answer;
+    if(answer > 0) noFill();
+    ellipse(train[i].inputs[0], train[i].inputs[1], 20, 20);
+    
+    //mark points based on perceptron guess
+    //green is correctly indentified
+    //red means perceptron made a mistake
+    fill(255, 0, 0); //color red
     int guess = perc.predict(train[i].inputs);
-    if(guess > 0) noFill();
-    ellipse(train[i].inputs[0], train[i].inputs[1], 8, 8);
+    if(guess == answer){
+      fill(0, 255, 0); //color green
+    }
+    ellipse(train[i].inputs[0], train[i].inputs[1], 10, 10);
+    
   }
 }
