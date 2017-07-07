@@ -8,9 +8,9 @@ Point[] train = new Point[1000];
 
 //coordinate space
 float xmin = -400;
-float ymin = -100;
+float ymin = -250;
 float xmax = 400;
-float ymax = 100;
+float ymax = 250;
 
 //function that describes a line
 float decrb_line(float x){
@@ -20,7 +20,7 @@ float decrb_line(float x){
 void setup(){
   size(640, 360);
   
-  perc = new Perceptron(3, 0.0001);
+  perc = new Perceptron(3, 0.00005);
   
   //create random points
   for(int i = 0; i < train.length; i++){
@@ -32,6 +32,7 @@ void setup(){
     }
     train[i] = new Point(x, y, answer);
   }
+  smooth();
 }
 
 void draw(){
@@ -58,12 +59,17 @@ void draw(){
   y2 = (-weights[0]*x2 - weights[2]) / weights[1];
   line(x1, y1, x2, y2);
   
+  //train perceptron with one point at the time
   perc.train(train[current].inputs, train[current].answer);
   current = (current + 1) % train.length;
   
-  for(int i = 0; i < train.length; i++){
+  //draw points based on perceptron guess
+  for(int i = 0; i < current; i++){
     stroke(0);
     strokeWeight(1);
+    fill(0);
+    int guess = perc.predict(train[i].inputs);
+    if(guess > 0) noFill();
     ellipse(train[i].inputs[0], train[i].inputs[1], 8, 8);
   }
 }
